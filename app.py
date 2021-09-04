@@ -3,10 +3,11 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 
 
-def create_file():
+def create_file(content="", filename="Untitled"):
     text_area = tk.Text(notebook)
+    text_area.insert("end", content)
     text_area.pack(fill="both", expand=True)
-    notebook.add(text_area, text="untitled")
+    notebook.add(text_area, text=filename)
     notebook.select(text_area)
 
 
@@ -27,6 +28,19 @@ def save_file():
     notebook.tab("current", text=file_name)
 
 
+def open_file():
+    file_path = filedialog.askopenfilename()
+    try:
+        file_name = os.path.basename(file_path)
+
+        with open(file_path, "r") as file:
+            content = file.read()
+    except(AttributeError, FileNotFoundError):
+        print("Open operation cancelled . ")
+        return
+    create_file(content, file_name)
+
+
 root = tk.Tk()
 root.title('notebook')
 root.option_add("*tearOff", False)
@@ -40,12 +54,17 @@ root.config(menu=menubar)
 file_menu = tk.Menu(menubar)
 menubar.add_cascade(label="File", menu=file_menu)
 
-file_menu.add_command(label="new", command=create_file)
-file_menu.add_command(label="save", command=save_file)
+file_menu.add_command(label="New", command=create_file, accelerator="Ctrl+N")
+file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
+file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+O")
 
 notebook = ttk.Notebook(main)
 notebook.pack(fill="both", expand=True)
 
 create_file()
+
+root.bind("<Control-n>", lambda event: create_file())
+root.bind("<Control-s>", lambda event: save_file())
+root.bind("<Control-o>", lambda event: open_file())
 
 root.mainloop()
