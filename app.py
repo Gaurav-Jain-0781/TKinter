@@ -8,13 +8,16 @@ contents = dict()
 def create_file(content="", filename="Untitled"):
     text_area = tk.Text(notebook)
     text_area.insert("end", content)
-
     text_area.pack(fill="both", expand=True)
-    notebook.add(text_area, text=filename)
 
+    notebook.add(text_area, text=filename)
     notebook.select(text_area)
 
     contents[str(text_area)] = hash(content)
+
+    text_scroll = ttk.Scrollbar(text_area, orient="vertical", command=text_area.yview)
+    text_scroll.pack(side="right", fill="y")
+    text_area["yscrollcommand"] = text_scroll.set
 
 
 def check_to_changes():
@@ -114,8 +117,9 @@ root = tk.Tk()
 root.title('notebook')
 root.option_add("*tearOff", False)
 
-main = ttk.Frame(root)
+main = ttk.Frame(root, height="250px", width="400px")
 main.pack(fill="both", expand=True, padx=10, pady=(10, 10))
+main.pack_propagate(0)
 
 menubar = tk.Menu()
 root.config(menu=menubar)
